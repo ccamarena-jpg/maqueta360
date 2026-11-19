@@ -12,6 +12,7 @@
   @supports(height:100dvh){#app{height:100dvh}}
   header{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--card);border-bottom:1px solid var(--line);z-index:5}
   .title{font-weight:650;font-size:15px}
+  .cloud{display:block;font-weight:400;font-size:11px;color:var(--accent)}
   #stats{display:block;font-weight:400;font-size:12px;color:var(--muted)}
   .tools{display:flex;gap:6px;flex-wrap:wrap}
   button{font:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;white-space:nowrap}
@@ -63,7 +64,7 @@
 <body>
 <div id="app">
   <header>
-    <div class="title">Oficinas 509 · 510 – Puestos<span id="stats"></span></div>
+    <div class="title">Oficinas 509 · 510 – Puestos<span id="stats"></span><span id="cloud" class="cloud">Conectando…</span></div>
     <div class="tabs">
       <button class="ptab on" data-p="claudia">Propuesta Claudia</button>
       <button class="ptab" data-p="daniela">Propuesta Daniela</button>
@@ -76,7 +77,7 @@
       <button id="btnList">☰ Lista</button>
     </div>
   </header>
-  <div id="banner" hidden><span id="bText"></span> <button id="bExport">Exportar</button></div>
+  <div id="banner" hidden><span id="bText"></span> <span style="display:flex;gap:6px"><button id="bUpload" hidden>Subir a la nube</button><button id="bDiscard" hidden>Descartar</button><button id="bExport">Exportar</button></span></div>
   <div id="stage">
     <div id="labels"></div>
     <div id="legend">
@@ -166,7 +167,31 @@ const clone = o => JSON.parse(JSON.stringify(o));
 let published = {claudia:seed(), daniela:seed()}, publishedDate = null, fromFile = false;
 let current = 'claudia', desks = [];
 function readDraft(n){ try{ const v=JSON.parse(localStorage.getItem(DKEY(n))||'null'); return Array.isArray(v)&&v.length?v:null; }catch(e){ return null; } }
-function save(){ try{ localStorage.setItem(DKEY(current), JSON.stringify(desks)); }catch(e){} updateBanner(); }
+const API = 'https://script.google.com/macros/s/AKfycby1HkxY_MSix6F6btQwmVhoBSeL0MciDcKLPEnJ1x6fHBV98C4gFRvLhJGl4YBEaCVT/exec';
+let apiOk = false, pushTimer = null, pushFailed = false, stale = new Set();
+function save(){
+  try{ localStorage.setItem(DKEY(current), JSON.stringify(desks)); }catch(e){}
+  if(apiOk){ clearTimeout(pushTimer); setStatus('Guardando…'); const n=current, snap=clone(desks); pushTimer=setTimeout(()=>pushRemote(n,snap),1200); }
+  updateBanner();
+}
+function dropDraft(n){ try{ localStorage.removeItem(DKEY(n)); }catch(e){} }
+async function pushRemote(n, snap){
+  pushTimer=null;
+  try{
+    const r = await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'save',propuesta:n,desks:snap})});
+    const j = await r.json(); if(!j.ok) throw new Error(j.error||'error');
+    published[n]=snap; pushFailed=false; stale.delete(n);
+    if(JSON.stringify(readDraft(n))===JSON.stringify(snap)) dropDraft(n);
+    setStatus('✓ Guardado en la nube '+new Date().toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}));
+  }catch(e){ pushFailed=true; setStatus('⚠ No se pudo guardar en la nube (queda en este navegador)'); }
+  updateBanner();
+}
+async function flushPush(){ if(pushTimer){ clearTimeout(pushTimer); await pushRemote(current, clone(desks)); } }
+async function refreshRemote(){
+  if(!apiOk) return;
+  try{ const r=await fetch(API+'?action=get&t='+Date.now()); const j=await r.json(); if(j.ok) Object.keys(PROPS).forEach(n=>{ if(Array.isArray(j[n])&&j[n].length) published[n]=j[n]; }); }catch(e){}
+}
+function setStatus(t){ const el=document.getElementById('cloud'); if(el) el.textContent=t; }
 function hasDraft(n){ const d=readDraft(n); return !!d && JSON.stringify(d)!==JSON.stringify(published[n]); }
 // Migra el borrador de la primera versión (un solo plano) a la propuesta de Claudia
 (function(){
@@ -180,6 +205,15 @@ function hasDraft(n){ const d=readDraft(n); return !!d && JSON.stringify(d)!==JS
   }catch(e){}
 })();
 async function loadPublished(){
+  try{
+    const r = await fetch(API+'?action=get&t='+Date.now());
+    const j = await r.json(); if(!j.ok) throw 0;
+    Object.keys(PROPS).forEach(n=>{ if(Array.isArray(j[n]) && j[n].length) published[n]=j[n]; });
+    apiOk = true; fromFile = true;
+    Object.keys(PROPS).forEach(n=>{ if(hasDraft(n)) stale.add(n); });
+    setStatus('☁ Conectado a Google Sheets');
+    return;
+  }catch(e){ apiOk = false; setStatus('Sin conexión a la nube · modo archivo'); }
   try{
     const r = await fetch('data/propuestas.json?t='+Date.now(), {cache:'no-store'});
     if(!r.ok) throw 0;
@@ -441,10 +475,10 @@ $('dCopy').onclick=async()=>{
   [...new Set(desks.map(d=>d.zone))].forEach(z=>{ lines.push(z.toUpperCase()); desks.filter(d=>d.zone===z).sort((a,b)=>a.id-b.id).forEach(d=>lines.push('  #'+d.id+' '+((d.name||'').trim()||'(libre)')+(d.prop?' [propuesta]':''))); lines.push(''); });
   try{ await navigator.clipboard.writeText(lines.join('\n')); toast('Lista copiada'); }catch(e){ toast('No se pudo copiar en este visor'); }
 };
-$('dReset').onclick=()=>{
+$('dReset').onclick=async()=>{
   const b=$('dReset');
   if(armed!=='reset'){ disarm(); armed='reset'; b.classList.add('arm'); b.textContent='¿Descartar borrador? Toca otra vez'; return; }
-  disarm(); try{ localStorage.removeItem(DKEY(current)); }catch(e){}
+  disarm(); clearTimeout(pushTimer); pushTimer=null; dropDraft(current); stale.delete(current); await refreshRemote();
   showProposal(current); toast('Se volvió a la versión publicada');
 };
 
@@ -459,18 +493,34 @@ function showProposal(n){
   if(location.hash.slice(1)!==n){ try{ history.replaceState(null,'','#'+n); }catch(e){ location.hash=n; } }
   updateStats(); updateBanner(); if(!drawer.hidden) renderList();
 }
-document.querySelectorAll('.ptab').forEach(t=>t.onclick=()=>showProposal(t.dataset.p));
+document.querySelectorAll('.ptab').forEach(t=>t.onclick=async()=>{ await flushPush(); await refreshRemote(); showProposal(t.dataset.p); });
 window.addEventListener('hashchange',()=>{ const h=location.hash.slice(1); if(PROPS[h] && h!==current) showProposal(h); });
 function updateBanner(){
-  const bn=$('banner'), dirty=Object.keys(PROPS).filter(hasDraft);
+  const bn=$('banner');
+  if(apiOk){
+    const pend=[...stale];
+    if(!pend.length && !pushFailed){ bn.hidden=true; return; }
+    bn.hidden=false; $('bExport').hidden=true; $('bUpload').hidden=false; $('bDiscard').hidden=!pend.length;
+    $('bText').textContent = pushFailed ? 'No se pudo guardar en la nube. Los cambios siguen en este navegador.'
+      : 'Hay cambios de una sesión anterior que no se subieron ('+pend.map(n=>PROPS[n].replace('Propuesta ','')).join(' y ')+').';
+    return;
+  }
+  const dirty=Object.keys(PROPS).filter(hasDraft);
   if(!dirty.length){ bn.hidden=true; return; }
-  bn.hidden=false;
+  bn.hidden=false; $('bExport').hidden=false; $('bUpload').hidden=true; $('bDiscard').hidden=true;
   $('bText').textContent='Cambios guardados solo en este navegador ('+dirty.map(n=>PROPS[n].replace('Propuesta ','')).join(' y ')+'). Exporta y súbelos al repo para que los vea tu jefa.';
 }
+$('bUpload').onclick=async()=>{
+  const ns = pushFailed ? [current] : [...stale];
+  for(const n of ns){ await pushRemote(n, clone(n===current?desks:readDraft(n))); }
+  toast('Cambios subidos');
+};
+$('bDiscard').onclick=async()=>{ [...stale].forEach(dropDraft); stale.clear(); await refreshRemote(); showProposal(current); toast('Se cargó la versión de la nube'); };
 
 /* ===== Comparar propuestas ===== */
 function seatsOf(n){ return (n===current ? desks : (readDraft(n)||published[n])); }
-$('btnCompare').onclick=()=>{
+$('btnCompare').onclick=async()=>{
+  await flushPush(); await refreshRemote();
   const A=seatsOf('claudia'), B=seatsOf('daniela'), map=new Map();
   const key=s=>s.trim().toLowerCase();
   A.forEach(d=>{ const k=key(d.name||''); if(k){ const e=map.get(k)||{name:d.name.trim()}; e.a=d; map.set(k,e);} });

@@ -9,13 +9,22 @@ Maqueta 3D interactiva para asignar puestos. Tiene dos propuestas: **Claudia** y
 | `index.html` | La maqueta (una sola página, sin instalación). |
 | `data/propuestas.json` | **Dónde se guardan los datos oficiales**: mesas, posiciones y nombres de ambas propuestas. |
 
-## Cómo se guardan los datos
+## Cómo se guardan los datos (Google Sheets)
 
-1. **Versión oficial:** está en `data/propuestas.json`, en este repo. Es lo que ve cualquiera que abra la página, tu jefa incluida.
-2. **Borrador:** lo que cada persona edita (nombres, mover mesas, agregar mesas) se guarda **solo en su propio navegador** hasta que lo publique. Mientras tanto aparece un aviso amarillo.
-3. **Para publicar:** botón **Exportar** (descarga y copia `propuestas.json`) → en GitHub abre `data/propuestas.json` → ✏️ *Edit* → pega el contenido → *Commit changes*. En 1–2 minutos la página se actualiza.
+Los datos se guardan en un **Google Sheet** a través del Apps Script de `apps-script/Code.gs`, que la página usa como URL `/exec`.
 
-> El JSON exportado incluye **ambas** propuestas tal como se ven en ese navegador. Si Daniela edita la suya en su computadora, debe exportar ella, o mandarte su archivo para que lo subas. Si no, se pisa su versión con la que tú tengas.
+- Cada cambio se guarda en la nube **automáticamente** (~1 s después), y solo la propuesta que se está editando. Si Claudia edita la suya y Daniela la suya, ninguna pisa a la otra.
+- El Sheet se llama **"Maqueta360 – Propuestas de puestos"**. Tiene una pestaña `claudia`, una `daniela` y una `historial` (quién guardó y cuándo, con el número de asignados).
+- Si la nube no responde, los cambios quedan en el navegador. Aparece un aviso para **Subir a la nube** cuando vuelva la conexión.
+- **Respaldo:** si el script no está disponible, la página lee `data/propuestas.json` y permite **Exportar**.
+
+### Instalar o actualizar el script
+
+1. Abre el proyecto de Apps Script de la URL `/exec` y pega el contenido de `apps-script/Code.gs` (reemplaza el código).
+2. Ejecuta una vez la función **`inicializar`** y autoriza. Esto crea el Sheet. El enlace aparece en *Registro de ejecución*.
+3. *Implementar → Gestionar implementaciones → ✏️ → Versión: **Nueva versión** → Implementar*. Configúralo como *Ejecutar como: Yo* y *Acceso: Cualquier persona*. La URL no cambia.
+
+> Cualquiera con el enlace de la página puede editar. Compártelo solo con quien corresponda.
 
 ## Publicarla en la web (una sola vez)
 
