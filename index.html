@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Maqueta 360 – Puestos Oficinas 509 y 510</title>
+<style>
+  :root{--ink:#1f2328;--muted:#6b7078;--line:#d9d6cf;--bg:#f4f2ee;--card:#fff;--accent:#1f5f8b;--ok:#2f7d4f;--warn:#b5651d;}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
+  #app{display:flex;flex-direction:column;height:100dvh;height:100vh}
+  @supports(height:100dvh){#app{height:100dvh}}
+  header{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--card);border-bottom:1px solid var(--line);z-index:5}
+  .title{font-weight:650;font-size:15px}
+  #stats{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+  .tools{display:flex;gap:6px;flex-wrap:wrap}
+  button{font:inherit;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;white-space:nowrap}
+  button:active{transform:translateY(1px)}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.on{background:#fff4e5;border-color:#e0a030;color:#7a4b00}
+  button.danger{color:#a3271f;border-color:#e8c4c0}
+  button.danger.arm{background:#a3271f;color:#fff}
+  #stage{position:relative;flex:1;min-height:0}
+  #stage canvas{display:block;width:100%;height:100%;touch-action:none}
+  #labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .lbl{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;cursor:pointer;padding:2px 6px;border-radius:999px;font-size:11px;line-height:1.3;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis;background:#1f2328;color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);user-select:none;-webkit-user-select:none}
+  .lbl b{font-weight:700;margin-right:3px;opacity:.75}
+  .lbl.free{background:#fff;color:#6b7078;border:1px dashed #9aa0a8}
+  .lbl.prop{background:#e8f4ec;color:#2f7d4f;border:1px dashed #2f7d4f}
+  .lbl.sel{outline:2px solid #e0a030;outline-offset:1px}
+  #sheet{position:absolute;left:8px;right:8px;bottom:8px;max-width:440px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.15);padding:12px;z-index:6}
+  #sheet .row{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+  #sheet .seat{font-weight:700;font-size:16px}
+  #sheet input[type=text],#sheet select,.list input{font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;width:100%;background:#fff}
+  #sheet select{font-size:13px;padding:6px 8px;width:auto;flex:1}
+  .hint{font-size:12px;color:var(--muted)}
+  #drawer{position:absolute;top:0;right:0;bottom:0;width:min(380px,100%);background:var(--card);border-left:1px solid var(--line);z-index:7;display:flex;flex-direction:column;box-shadow:-6px 0 24px rgba(0,0,0,.12)}
+  #drawer .head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line);gap:6px;flex-wrap:wrap}
+  .list{overflow:auto;padding:6px 12px 20px;flex:1}
+  .zone{margin:12px 0 4px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+  .item{display:flex;gap:6px;align-items:center;margin:4px 0}
+  .item .n{width:34px;font-weight:700;font-size:13px;flex:none}
+  .item input{padding:6px 8px;font-size:14px}
+  .item button{padding:6px 8px;flex:none}
+  .tag{font-size:10px;color:var(--ok);border:1px solid var(--ok);border-radius:4px;padding:0 4px;margin-left:4px}
+  #toast{position:absolute;left:50%;top:70px;transform:translateX(-50%);background:#1f2328;color:#fff;padding:8px 12px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9;max-width:90%;text-align:center}
+  #legend{position:absolute;left:8px;top:8px;background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:11px;color:var(--muted);z-index:4;line-height:1.6}
+  #legend span{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+  .tabs{display:flex;gap:4px;flex-wrap:wrap}
+  .ptab.on{background:var(--ink);border-color:var(--ink);color:#fff}
+  #banner{background:#fff4e5;border-bottom:1px solid #f0d3a8;color:#7a4b00;font-size:12px;padding:6px 10px;display:flex;gap:8px;align-items:center;justify-content:space-between}
+  #banner button{padding:4px 8px;font-size:12px}
+  #cmp{position:absolute;inset:0;background:rgba(31,35,40,.35);z-index:8;display:flex;align-items:center;justify-content:center;padding:10px}
+  #cmp .card{background:#fff;border-radius:14px;width:min(620px,100%);max-height:100%;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+  #cmp .head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px}
+  #cmp table{width:100%;border-collapse:collapse;font-size:13px}
+  #cmp th,#cmp td{text-align:left;padding:6px 6px;border-bottom:1px solid #eee;vertical-align:top}
+  #cmp th{font-size:11px;text-transform:uppercase;color:var(--muted)}
+  #cmp tr.chg td{background:#fff8e6}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="title">Oficinas 509 · 510 – Puestos<span id="stats"></span></div>
+    <div class="tabs">
+      <button class="ptab on" data-p="claudia">Propuesta Claudia</button>
+      <button class="ptab" data-p="daniela">Propuesta Daniela</button>
+      <button id="btnCompare">⇄ Comparar</button>
+    </div>
+    <div class="tools">
+      <button id="btnView">Vista planta</button>
+      <button id="btnMove">✋ Mover mesas</button>
+      <button id="btnAdd" class="primary">+ Mesa</button>
+      <button id="btnList">☰ Lista</button>
+    </div>
+  </header>
+  <div id="banner" hidden><span id="bText"></span> <button id="bExport">Exportar</button></div>
+  <div id="stage">
+    <div id="labels"></div>
+    <div id="legend">
+      <div><span style="background:#1f2328"></span>Asignado</div>
+      <div><span style="background:#fff;border:1px dashed #9aa0a8"></span>Libre</div>
+      <div><span style="background:#e8f4ec;border:1px dashed #2f7d4f"></span>Mesa propuesta</div>
+    </div>
+    <div id="toast"></div>
+
+    <div id="sheet" hidden>
+      <div class="row">
+        <span class="seat" id="sSeat">#1</span>
+        <select id="sZone"></select>
+        <button id="sClose" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="row"><input type="text" id="sName" placeholder="Nombre de la persona asignada" autocomplete="off"></div>
+      <div class="row">
+        <button id="sRot">↻ Girar 90°</button>
+        <button id="sProp">Marcar propuesta</button>
+        <button id="sDel" class="danger">Eliminar</button>
+      </div>
+      <div class="hint" id="sHint">Activa “Mover mesas” y arrastra la mesa para reubicarla.</div>
+    </div>
+
+    <div id="drawer" hidden>
+      <div class="head">
+        <strong>Asignación de puestos</strong>
+        <div style="display:flex;gap:6px">
+          <button id="dCopy">Copiar lista</button>
+          <button id="dExport">Exportar JSON</button>
+          <button id="dReset" class="danger">Descartar borrador</button>
+          <button id="dClose">✕</button>
+        </div>
+      </div>
+      <div class="list" id="list"></div>
+    </div>
+
+    <div id="cmp" hidden>
+      <div class="card">
+        <div class="head"><strong>Comparar propuestas</strong><button id="cmpClose">✕</button></div>
+        <div class="hint" id="cmpSum" style="padding:0 12px 6px"></div>
+        <div style="overflow:auto;flex:1;padding:0 12px 12px">
+          <table><thead><tr><th>Persona</th><th>Claudia</th><th>Daniela</th></tr></thead><tbody id="cmpBody"></tbody></table>
+        </div>
+        <div class="hint" style="padding:8px 12px;border-top:1px solid var(--line)">En amarillo: personas con puesto distinto entre propuestas.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+/* ===== Datos ===== */
+const ROOM = {w:12, d:7.8};           // metros aprox. (5.29 + 5.39 + muros) x fondo
+const DESK = {w:1.10, d:0.60, h:0.75}; // mesa ~1.10 m
+const KEY = 'ttaudit-oficina-509-510-v1';
+const ZONES = [
+  '509 · Pared izquierda',
+  '509 · Isla central',
+  '509 · Pasillo oficinas',
+  'Columna · puerta cancelada',
+  '510 · Isla central',
+  '510 · Pared del fondo (cajas)',
+  'Nuevas'
+];
+// rot: hacia dónde mira la silla. 0 = hacia la ventana, 180 = hacia el fondo, 90 = hacia la derecha, -90 = hacia la izquierda
+function seed(){
+  const L=[]; let n=1;
+  const add=(x,z,rot,zone,prop)=>L.push({id:n++,x,z,rot,zone,name:'',prop:!!prop});
+  [3.0,4.15,5.3,7.05].forEach(z=>add(0.45,z,90,ZONES[0]));
+  [4.85,5.97,7.09].forEach(z=>{add(2.72,z,-90,ZONES[1]);add(3.32,z,90,ZONES[1]);});
+  [1.1,2.25].forEach(z=>{add(3.33,z,90,ZONES[2]);add(5.62,z,-90,ZONES[2]);});
+  [5.4,7.0].forEach(z=>{add(5.32,z,-90,ZONES[3]);add(5.92,z,90,ZONES[3]);}); // 15-16 antes de la columna, 17-18 después
+  [4.85,5.97,7.09].forEach(z=>{add(8.56,z,-90,ZONES[4]);add(9.16,z,90,ZONES[4]);});
+  [8.4,9.55,10.7].forEach(x=>add(x,3.22,0,ZONES[5]));
+  add(5.62,4.55,180,ZONES[3],true); // mesa extra propuesta: al tope de la 15 y 16, centrada entre ambas
+  return L;
+}
+/* ===== Propuestas =====
+   Fuente oficial: data/propuestas.json (en el repo). Cada navegador guarda además un
+   BORRADOR local por propuesta hasta que se exporta y se sube al repo. */
+const PROPS = {claudia:'Propuesta Claudia', daniela:'Propuesta Daniela'};
+const DKEY = n => 'ttaudit-maqueta360-borrador-'+n;
+const clone = o => JSON.parse(JSON.stringify(o));
+let published = {claudia:seed(), daniela:seed()}, publishedDate = null, fromFile = false;
+let current = 'claudia', desks = [];
+function readDraft(n){ try{ const v=JSON.parse(localStorage.getItem(DKEY(n))||'null'); return Array.isArray(v)&&v.length?v:null; }catch(e){ return null; } }
+function save(){ try{ localStorage.setItem(DKEY(current), JSON.stringify(desks)); }catch(e){} updateBanner(); }
+function hasDraft(n){ const d=readDraft(n); return !!d && JSON.stringify(d)!==JSON.stringify(published[n]); }
+// Migra el borrador de la primera versión (un solo plano) a la propuesta de Claudia
+(function(){
+  try{
+    const old=JSON.parse(localStorage.getItem('ttaudit-oficina-509-510-v1')||'null');
+    if(Array.isArray(old) && old.length && !localStorage.getItem(DKEY('claudia'))){
+      const fix={15:[5.32,5.4,-90],16:[5.92,5.4,90],17:[5.32,7.0,-90],18:[5.92,7.0,90],28:[5.62,4.55,180]};
+      if(+(localStorage.getItem('ttaudit-oficina-509-510-v1:v')||0)<2) old.forEach(d=>{ const f=fix[d.id]; if(f){ d.x=f[0]; d.z=f[1]; d.rot=f[2]; } });
+      localStorage.setItem(DKEY('claudia'), JSON.stringify(old));
+    }
+  }catch(e){}
+})();
+async function loadPublished(){
+  try{
+    const r = await fetch('data/propuestas.json?t='+Date.now(), {cache:'no-store'});
+    if(!r.ok) throw 0;
+    const j = await r.json();
+    Object.keys(PROPS).forEach(n=>{ if(Array.isArray(j[n]) && j[n].length) published[n]=j[n]; });
+    publishedDate = j.actualizado || null; fromFile = true;
+  }catch(e){ fromFile = false; }
+}
+
+/* ===== Escena ===== */
+const stage = document.getElementById('stage');
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+stage.insertBefore(renderer.domElement, stage.firstChild);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xf4f2ee);
+const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.dampingFactor = 0.12;
+controls.maxPolarAngle = Math.PI/2.15; controls.minDistance = 3; controls.maxDistance = 40;
+const CENTER = new THREE.Vector3(ROOM.w/2, 0, ROOM.d/2);
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0xb9b3a8, 0.75));
+const sun = new THREE.DirectionalLight(0xffffff, 0.6);
+sun.position.set(4, 14, 12); sun.castShadow = true;
+sun.shadow.mapSize.set(1024,1024);
+Object.assign(sun.shadow.camera,{left:-9,right:9,top:9,bottom:-9,near:1,far:40});
+sun.target.position.copy(CENTER); scene.add(sun); scene.add(sun.target);
+
+const M = c => new THREE.MeshStandardMaterial({color:c, roughness:.85, metalness:0});
+function box(w,h,d,mat,x,y,z,parent){
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat);
+  m.position.set(x,y,z); m.castShadow = true; m.receiveShadow = true;
+  (parent||scene).add(m); return m;
+}
+function floorPatch(x0,z0,x1,z1,color,y){
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(x1-x0,z1-z0), M(color));
+  m.rotation.x = -Math.PI/2; m.position.set((x0+x1)/2, y||0, (z0+z1)/2); m.receiveShadow = true; scene.add(m);
+}
+function floorText(text,x,z,size,color,rotY){
+  const c=document.createElement('canvas'), ctx=c.getContext('2d');
+  const fs=64; ctx.font='700 '+fs+'px -apple-system,Segoe UI,Roboto,Arial';
+  const lines=text.split('\n'); const w=Math.max(...lines.map(l=>ctx.measureText(l).width))+20;
+  c.width=Math.ceil(w); c.height=Math.ceil(fs*1.25*lines.length+10);
+  ctx.font='700 '+fs+'px -apple-system,Segoe UI,Roboto,Arial'; ctx.fillStyle=color||'#8b867d'; ctx.textAlign='center'; ctx.textBaseline='top';
+  lines.forEach((l,i)=>ctx.fillText(l,c.width/2,5+i*fs*1.25));
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
+  const h=size*lines.length*1.25, wd=h*c.width/c.height;
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(wd,h), new THREE.MeshBasicMaterial({map:tex,transparent:true,depthWrite:false}));
+  m.rotation.x=-Math.PI/2; if(rotY) m.rotation.z=rotY; m.position.set(x,0.012,z); scene.add(m);
+}
+
+// Pisos
+floorPatch(-0.2,-0.2,ROOM.w+0.2,ROOM.d+0.2,0xe2ddd4);
+floorPatch(0,0,6.07,ROOM.d,0xd9d5ce,0.002);      // 509 (cerámico)
+floorPatch(6.07,0,ROOM.w,ROOM.d,0xe6dccb,0.002); // 510 (piso madera)
+floorPatch(0,0,3.0,2.9,0xcfcac1,0.004);
+floorPatch(5.9,0,8.03,2.87,0xcfcac1,0.004);
+floorPatch(8.03,0,ROOM.w,2.87,0xcfcac1,0.004);
+const grid = new THREE.GridHelper(14, 28, 0xcfc9bf, 0xdcd7ce); grid.position.set(ROOM.w/2,0.006,ROOM.d/2);
+grid.material.transparent=true; grid.material.opacity=.35; scene.add(grid);
+
+// Muros (cortados a 1 m para ver dentro)
+const wallM = M(0xcfcbc4), lowWallM = M(0xbdb8b0);
+const WH = 1.0;
+box(ROOM.w+0.3, WH, 0.15, wallM, ROOM.w/2, WH/2, -0.075);
+box(0.15, WH, ROOM.d, wallM, -0.075, WH/2, ROOM.d/2);
+box(0.15, WH, ROOM.d, wallM, ROOM.w+0.075, WH/2, ROOM.d/2);
+// Fachada vidrio (lado ventanas)
+box(ROOM.w+0.3, 0.12, 0.15, wallM, ROOM.w/2, 0.06, ROOM.d+0.075);
+const glass = new THREE.Mesh(new THREE.BoxGeometry(ROOM.w, 1.1, 0.04), new THREE.MeshStandardMaterial({color:0x9cc3d5,transparent:true,opacity:.22}));
+glass.position.set(ROOM.w/2, 0.67, ROOM.d+0.07); scene.add(glass);
+// Oficinas cerradas (franja superior)
+box(0.1,WH,2.9,lowWallM,3.0,WH/2,1.45); box(3.0,WH,0.1,lowWallM,1.5,WH/2,2.9);
+box(0.1,WH,2.87,lowWallM,5.9,WH/2,1.435); box(0.1,WH,2.87,lowWallM,8.03,WH/2,1.435); box(2.13,WH,0.1,lowWallM,6.965,WH/2,2.87);
+const glassM = new THREE.MeshStandardMaterial({color:0x8fb6c9,transparent:true,opacity:.3});
+box(3.97,WH,0.06,glassM,10.0,WH/2,2.87);
+floorText('OFICINA',1.5,1.45,0.32); floorText('OFICINA R',6.97,1.45,0.28); floorText('SALA DE\nREUNIONES',10.0,1.4,0.3);
+floorText('OFICINA 509',1.75,6.6,0.38,'#a39e94'); floorText('OFICINA 510',10.6,6.9,0.38,'#a39e94');
+// Columnas
+const colM = M(0x9a9893);
+[[0,0.6],[5.34,6.07],[11.25,11.97]].forEach(([a,b])=>box(b-a,2.0,0.35,colM,(a+b)/2,1.0,6.275));
+// Estación varios / microondas
+box(0.5,0.9,1.8,M(0xc9c3b8),11.7,0.45,4.1); floorText('ESTACIÓN\nVARIOS',11.05,4.1,0.16,'#8b867d',Math.PI/2);
+// Puerta cancelada
+const xM = new THREE.MeshBasicMaterial({color:0xc0392b});
+box(0.95,0.05,0.08,xM,6.6,0.2,ROOM.d-0.05).rotation.z=0.35;
+box(0.95,0.05,0.08,xM,6.6,0.2,ROOM.d-0.05).rotation.z=-0.35;
+floorText('PUERTA CANCELADA',6.6,ROOM.d+0.35,0.17,'#c0392b');
+floorText('VENTANAS / TERRAZA',2.8,ROOM.d+0.35,0.17,'#7aa3b8');
+
+/* ===== Mesas ===== */
+const woodM = M(0x8a7560), legM = M(0x3a3a3a), chairM = M(0x2b2b2b), monM = M(0x1d1d1d);
+const selM = M(0xe0a030), propM = new THREE.MeshStandardMaterial({color:0x6aa77b,transparent:true,opacity:.6});
+const groups = new Map();
+function buildDesk(d){
+  const g = new THREE.Group(); g.userData.id = d.id;
+  const top = box(DESK.w,0.04,DESK.d,woodM,0,DESK.h,0,g); top.userData.top=true;
+  [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([sx,sz])=>box(0.04,DESK.h-0.02,0.04,legM,sx*(DESK.w/2-0.04),(DESK.h-0.02)/2,sz*(DESK.d/2-0.04),g));
+  box(0.5,0.3,0.03,monM,0,DESK.h+0.22,-0.17,g); box(0.06,0.08,0.06,monM,0,DESK.h+0.05,-0.17,g);
+  box(0.48,0.08,0.46,chairM,0,0.47,0.52,g); box(0.46,0.5,0.06,chairM,0,0.78,0.76,g);
+  box(0.05,0.42,0.05,legM,0,0.22,0.52,g); box(0.5,0.03,0.5,legM,0,0.03,0.52,g);
+  scene.add(g); groups.set(d.id,g); syncDesk(d);
+}
+function syncDesk(d){
+  const g = groups.get(d.id); if(!g) return;
+  g.position.set(d.x,0,d.z); g.rotation.y = d.rot*Math.PI/180;
+  const top = g.children.find(c=>c.userData.top);
+  top.material = (d.id===selected) ? selM : (d.prop ? propM : woodM);
+  g.children.forEach(c=>{ if(!c.userData.top){ c.visible = true; }});
+}
+function removeDeskMesh(id){ const g=groups.get(id); if(g){ scene.remove(g); groups.delete(id);} }
+
+/* ===== Etiquetas ===== */
+const labelsEl = document.getElementById('labels');
+const labelEls = new Map();
+function makeLabel(d){
+  const el = document.createElement('div'); el.className='lbl';
+  el.addEventListener('click', ev=>{ ev.stopPropagation(); select(d.id); });
+  labelsEl.appendChild(el); labelEls.set(d.id, el); refreshLabel(d);
+}
+function refreshLabel(d){
+  const el = labelEls.get(d.id); if(!el) return;
+  const nm = (d.name||'').trim();
+  el.className = 'lbl' + (nm ? '' : (d.prop ? ' prop' : ' free')) + (d.id===selected?' sel':'');
+  el.innerHTML = '<b>#'+d.id+'</b>' + (nm ? esc(nm) : (d.prop ? 'Propuesta' : 'Libre'));
+}
+function esc(s){ return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+const v3 = new THREE.Vector3();
+function placeLabels(){
+  const w = labelsEl.clientWidth, h = labelsEl.clientHeight;
+  desks.forEach(d=>{
+    const el = labelEls.get(d.id); if(!el) return;
+    v3.set(d.x, 1.25, d.z).project(camera);
+    if(v3.z>1){ el.style.display='none'; return; }
+    el.style.display='';
+    el.style.left = ((v3.x+1)/2*w)+'px'; el.style.top = ((1-v3.y)/2*h)+'px';
+  });
+}
+
+/* ===== Selección y edición ===== */
+let selected = null;
+const $ = id => document.getElementById(id);
+const sheet=$('sheet'), sName=$('sName'), sZone=$('sZone'), sSeat=$('sSeat'), sProp=$('sProp'), sDel=$('sDel');
+ZONES.forEach(z=>{ const o=document.createElement('option'); o.value=o.textContent=z; sZone.appendChild(o); });
+function byId(id){ return desks.find(d=>d.id===id); }
+function select(id){
+  const prev = selected; selected = id;
+  [prev,id].forEach(i=>{ const d=byId(i); if(d){ syncDesk(d); refreshLabel(d);} });
+  const d = byId(id);
+  if(!d){ sheet.hidden = true; return; }
+  sheet.hidden = false; disarm();
+  sSeat.textContent = '#'+d.id; sName.value = d.name||''; sZone.value = ZONES.includes(d.zone)?d.zone:'Nuevas';
+  sProp.textContent = d.prop ? '✓ Confirmar mesa' : 'Marcar propuesta';
+}
+sName.addEventListener('input',()=>{ const d=byId(selected); if(!d) return; d.name=sName.value; refreshLabel(d); updateStats(); save(); renderListSoft(d); });
+sZone.addEventListener('change',()=>{ const d=byId(selected); if(!d) return; d.zone=sZone.value; save(); renderList(); });
+$('sRot').onclick=()=>{ const d=byId(selected); if(!d) return; d.rot=((d.rot+90+180)%360)-180; syncDesk(d); save(); };
+sProp.onclick=()=>{ const d=byId(selected); if(!d) return; d.prop=!d.prop; syncDesk(d); refreshLabel(d); select(d.id); updateStats(); save(); renderList(); };
+$('sClose').onclick=()=>select(null);
+let armed=null;
+function disarm(){ armed=null; sDel.classList.remove('arm'); sDel.textContent='Eliminar'; const r=$('dReset'); r.classList.remove('arm'); r.textContent='Restablecer'; }
+sDel.onclick=()=>{
+  if(armed!=='del'){ disarm(); armed='del'; sDel.classList.add('arm'); sDel.textContent='¿Eliminar? Toca otra vez'; return; }
+  const id=selected; desks=desks.filter(d=>d.id!==id); removeDeskMesh(id);
+  const el=labelEls.get(id); if(el){el.remove(); labelEls.delete(id);}
+  select(null); save(); updateStats(); renderList(); toast('Mesa #'+id+' eliminada');
+};
+
+/* ===== Vista / mover / agregar ===== */
+let planView=false, moveMode=false;
+function fitDistance(){
+  const a = renderer.domElement.clientWidth / Math.max(1,renderer.domElement.clientHeight);
+  const vf = camera.fov*Math.PI/180, hf = 2*Math.atan(Math.tan(vf/2)*a);
+  return Math.max((ROOM.w/2+0.8)/Math.tan(hf/2), (ROOM.d/2+0.8)/Math.tan(vf/2));
+}
+function setView(plan){
+  planView = plan; const dist = fitDistance();
+  controls.target.copy(CENTER);
+  if(plan){ camera.position.set(CENTER.x, dist, CENTER.z+0.001); controls.enableRotate=false; }
+  else { camera.position.set(CENTER.x, dist*0.72, CENTER.z+dist*0.72); controls.enableRotate=true; }
+  controls.update(); $('btnView').textContent = plan ? 'Vista 3D' : 'Vista planta';
+}
+$('btnView').onclick=()=>setView(!planView);
+$('btnMove').onclick=()=>{ moveMode=!moveMode; $('btnMove').classList.toggle('on',moveMode); $('btnMove').textContent = moveMode?'✋ Moviendo…':'✋ Mover mesas'; toast(moveMode?'Arrastra cualquier mesa. Vuelve a tocar para fijar.':'Mesas fijas'); };
+$('btnAdd').onclick=()=>{
+  const id = desks.reduce((m,d)=>Math.max(m,d.id),0)+1;
+  const t = controls.target;
+  const d = {id, x:clamp(snap(t.x),0.4,ROOM.w-0.4), z:clamp(snap(t.z),0.4,ROOM.d-0.4), rot:0, zone:'Nuevas', name:'', prop:false};
+  desks.push(d); buildDesk(d); makeLabel(d); save(); updateStats(); renderList(); select(id);
+  if(!moveMode) $('btnMove').click();
+  toast('Mesa #'+id+' agregada: arrástrala a su lugar');
+};
+const snap = v => Math.round(v/0.05)*0.05;
+const clamp = (v,a,b)=>Math.min(b,Math.max(a,v));
+
+/* ===== Puntero: seleccionar y arrastrar ===== */
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), floor = new THREE.Plane(new THREE.Vector3(0,1,0),0), hit = new THREE.Vector3();
+function setNdc(e){ const r=renderer.domElement.getBoundingClientRect(); ndc.set((e.clientX-r.left)/r.width*2-1, -(e.clientY-r.top)/r.height*2+1); ray.setFromCamera(ndc,camera); }
+function pick(e){
+  setNdc(e);
+  const hits = ray.intersectObjects([...groups.values()], true);
+  for(const h of hits){ let o=h.object; while(o && o.userData.id===undefined) o=o.parent; if(o) return o.userData.id; }
+  return null;
+}
+let down=null, drag=null;
+stage.addEventListener('pointerdown', e=>{
+  if(e.target!==renderer.domElement) return;
+  const id = pick(e); down = {x:e.clientX,y:e.clientY,id};
+  if(moveMode && id!=null){
+    e.stopPropagation(); e.preventDefault();
+    const d = byId(id); ray.ray.intersectPlane(floor, hit);
+    drag = {id, ox:d.x-hit.x, oz:d.z-hit.z, pid:e.pointerId};
+    try{ renderer.domElement.setPointerCapture(e.pointerId);}catch(_){}
+    if(selected!==id) select(id);
+  }
+}, true);
+renderer.domElement.addEventListener('pointermove', e=>{
+  if(!drag) return; setNdc(e);
+  if(!ray.ray.intersectPlane(floor, hit)) return;
+  const d = byId(drag.id);
+  d.x = clamp(snap(hit.x+drag.ox), 0.3, ROOM.w-0.3); d.z = clamp(snap(hit.z+drag.oz), 0.3, ROOM.d-0.3);
+  syncDesk(d);
+});
+window.addEventListener('pointerup', e=>{
+  if(drag){ drag=null; save(); return; }
+  if(down && Math.hypot(e.clientX-down.x, e.clientY-down.y) < 6 && e.target===renderer.domElement){ select(down.id); }
+  down=null;
+});
+
+/* ===== Lista ===== */
+const drawer=$('drawer'), list=$('list');
+$('btnList').onclick=()=>{ renderList(); drawer.hidden=false; };
+$('dClose').onclick=()=>drawer.hidden=true;
+function renderList(){
+  if(drawer.hidden && list.childElementCount) { /* se re-renderiza al abrir */ }
+  list.innerHTML='';
+  const zones=[...ZONES, ...new Set(desks.map(d=>d.zone).filter(z=>!ZONES.includes(z)))];
+  zones.forEach(z=>{
+    const ds = desks.filter(d=>d.zone===z).sort((a,b)=>a.id-b.id); if(!ds.length) return;
+    const h=document.createElement('div'); h.className='zone'; h.textContent=z+' ('+ds.filter(d=>(d.name||'').trim()).length+'/'+ds.length+')'; list.appendChild(h);
+    ds.forEach(d=>{
+      const row=document.createElement('div'); row.className='item'; row.dataset.id=d.id;
+      row.innerHTML='<span class="n">#'+d.id+'</span>';
+      const inp=document.createElement('input'); inp.type='text'; inp.value=d.name||''; inp.placeholder=d.prop?'Mesa propuesta – libre':'Libre';
+      inp.oninput=()=>{ d.name=inp.value; refreshLabel(d); updateStats(); save(); };
+      const loc=document.createElement('button'); loc.textContent='Ver'; loc.title='Ubicar en el plano';
+      loc.onclick=()=>{ drawer.hidden=true; controls.target.set(d.x,0,d.z); controls.update(); select(d.id); };
+      row.appendChild(inp); if(d.prop){ const t=document.createElement('span'); t.className='tag'; t.textContent='prop.'; row.appendChild(t);} row.appendChild(loc);
+      list.appendChild(row);
+    });
+  });
+}
+function renderListSoft(d){ const r=list.querySelector('.item[data-id="'+d.id+'"] input'); if(r && document.activeElement!==r) r.value=d.name||''; }
+$('dCopy').onclick=async()=>{
+  const lines=[PROPS[current]+' – Oficinas 509/510',''];
+  [...new Set(desks.map(d=>d.zone))].forEach(z=>{ lines.push(z.toUpperCase()); desks.filter(d=>d.zone===z).sort((a,b)=>a.id-b.id).forEach(d=>lines.push('  #'+d.id+' '+((d.name||'').trim()||'(libre)')+(d.prop?' [propuesta]':''))); lines.push(''); });
+  try{ await navigator.clipboard.writeText(lines.join('\n')); toast('Lista copiada'); }catch(e){ toast('No se pudo copiar en este visor'); }
+};
+$('dReset').onclick=()=>{
+  const b=$('dReset');
+  if(armed!=='reset'){ disarm(); armed='reset'; b.classList.add('arm'); b.textContent='¿Descartar borrador? Toca otra vez'; return; }
+  disarm(); try{ localStorage.removeItem(DKEY(current)); }catch(e){}
+  showProposal(current); toast('Se volvió a la versión publicada');
+};
+
+/* ===== Cambiar de propuesta ===== */
+function clearScene(){ [...groups.keys()].forEach(removeDeskMesh); labelEls.forEach(el=>el.remove()); labelEls.clear(); }
+function showProposal(n){
+  if(!PROPS[n]) n='claudia';
+  current=n; selected=null; sheet.hidden=true; clearScene();
+  desks = clone(readDraft(n) || published[n]);
+  desks.forEach(d=>{ buildDesk(d); makeLabel(d); });
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.toggle('on', t.dataset.p===n));
+  if(location.hash.slice(1)!==n){ try{ history.replaceState(null,'','#'+n); }catch(e){ location.hash=n; } }
+  updateStats(); updateBanner(); if(!drawer.hidden) renderList();
+}
+document.querySelectorAll('.ptab').forEach(t=>t.onclick=()=>showProposal(t.dataset.p));
+window.addEventListener('hashchange',()=>{ const h=location.hash.slice(1); if(PROPS[h] && h!==current) showProposal(h); });
+function updateBanner(){
+  const bn=$('banner'), dirty=Object.keys(PROPS).filter(hasDraft);
+  if(!dirty.length){ bn.hidden=true; return; }
+  bn.hidden=false;
+  $('bText').textContent='Cambios guardados solo en este navegador ('+dirty.map(n=>PROPS[n].replace('Propuesta ','')).join(' y ')+'). Exporta y súbelos al repo para que los vea tu jefa.';
+}
+
+/* ===== Comparar propuestas ===== */
+function seatsOf(n){ return (n===current ? desks : (readDraft(n)||published[n])); }
+$('btnCompare').onclick=()=>{
+  const A=seatsOf('claudia'), B=seatsOf('daniela'), map=new Map();
+  const key=s=>s.trim().toLowerCase();
+  A.forEach(d=>{ const k=key(d.name||''); if(k){ const e=map.get(k)||{name:d.name.trim()}; e.a=d; map.set(k,e);} });
+  B.forEach(d=>{ const k=key(d.name||''); if(k){ const e=map.get(k)||{name:d.name.trim()}; e.b=d; map.set(k,e);} });
+  const rows=[...map.values()].sort((x,y)=>x.name.localeCompare(y.name,'es'));
+  const cell=d=>d?('#'+d.id+' · '+esc(d.zone)):'<span style="color:#a3271f">sin puesto</span>';
+  const diff=rows.filter(r=>!r.a||!r.b||r.a.id!==r.b.id).length;
+  $('cmpBody').innerHTML = rows.length ? rows.map(r=>{
+    const same=r.a&&r.b&&r.a.id===r.b.id;
+    return '<tr class="'+(same?'':'chg')+'"><td>'+esc(r.name)+'</td><td>'+cell(r.a)+'</td><td>'+cell(r.b)+'</td></tr>';
+  }).join('') : '<tr><td colspan="3" class="hint">Aún no hay nombres asignados en ninguna propuesta.</td></tr>';
+  const cnt=n=>seatsOf(n).filter(d=>!d.prop).length;
+  $('cmpSum').textContent = rows.length+' personas · '+diff+' con puesto distinto · Mesas: Claudia '+cnt('claudia')+', Daniela '+cnt('daniela');
+  $('cmp').hidden=false;
+};
+$('cmpClose').onclick=()=>$('cmp').hidden=true;
+
+/* ===== Exportar para subir al repo ===== */
+function exportJSON(){
+  const out={actualizado:new Date().toISOString().slice(0,10)};
+  Object.keys(PROPS).forEach(n=>out[n]=seatsOf(n));
+  return JSON.stringify(out,null,1);
+}
+$('bExport').onclick=$('dExport').onclick=async()=>{
+  const txt=exportJSON();
+  try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'})); a.download='propuestas.json'; document.body.appendChild(a); a.click(); a.remove(); }catch(e){}
+  try{ await navigator.clipboard.writeText(txt); toast('propuestas.json descargado y copiado. Reemplázalo en data/ del repo.'); }
+  catch(e){ toast('Descargado propuestas.json. Reemplázalo en data/ del repo.'); }
+};
+
+/* ===== Varios ===== */
+function updateStats(){
+  const real=desks.filter(d=>!d.prop), asig=desks.filter(d=>(d.name||'').trim()).length;
+  const prop=desks.length-real.length;
+  $('stats').textContent = real.length+' mesas · '+asig+' asignadas · '+(desks.length-asig)+' libres'+(prop?' · '+prop+' propuesta':'');
+}
+let tt; function toast(m){ const t=$('toast'); t.textContent=m; t.style.opacity=1; clearTimeout(tt); tt=setTimeout(()=>t.style.opacity=0,2200); }
+function resize(){
+  const w=stage.clientWidth, h=stage.clientHeight; renderer.setSize(w,h,false);
+  renderer.domElement.style.width=w+'px'; renderer.domElement.style.height=h+'px';
+  camera.aspect=w/Math.max(1,h); camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', ()=>{ resize(); });
+
+resize(); setView(false);
+loadPublished().then(()=>{ showProposal(location.hash.slice(1)||'claudia'); if(!fromFile) toast('Mostrando la versión base (no se encontró data/propuestas.json)'); });
+(function loop(){ requestAnimationFrame(loop); controls.update(); renderer.render(scene,camera); placeLabels(); })();
+})();
+</script>
+</body>
+</html>

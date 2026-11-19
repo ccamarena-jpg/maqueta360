@@ -1,0 +1,511 @@
+{
+ "actualizado": "2026-11-19",
+ "claudia": [
+  {
+   "id": 1,
+   "x": 0.45,
+   "z": 3,
+   "rot": 90,
+   "zone": "509 · Pared izquierda",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 2,
+   "x": 0.45,
+   "z": 4.15,
+   "rot": 90,
+   "zone": "509 · Pared izquierda",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 3,
+   "x": 0.45,
+   "z": 5.3,
+   "rot": 90,
+   "zone": "509 · Pared izquierda",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 4,
+   "x": 0.45,
+   "z": 7.05,
+   "rot": 90,
+   "zone": "509 · Pared izquierda",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 5,
+   "x": 2.72,
+   "z": 4.85,
+   "rot": -90,
+   "zone": "509 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 6,
+   "x": 3.32,
+   "z": 4.85,
+   "rot": 90,
+   "zone": "509 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 7,
+   "x": 2.72,
+   "z": 5.97,
+   "rot": -90,
+   "zone": "509 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 8,
+   "x": 3.32,
+   "z": 5.97,
+   "rot": 90,
+   "zone": "509 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 9,
+   "x": 2.72,
+   "z": 7.09,
+   "rot": -90,
+   "zone": "509 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 10,
+   "x": 3.32,
+   "z": 7.09,
+   "rot": 90,
+   "zone": "509 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 11,
+   "x": 3.33,
+   "z": 1.1,
+   "rot": 90,
+   "zone": "509 · Pasillo oficinas",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 12,
+   "x": 5.62,
+   "z": 1.1,
+   "rot": -90,
+   "zone": "509 · Pasillo oficinas",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 13,
+   "x": 3.33,
+   "z": 2.25,
+   "rot": 90,
+   "zone": "509 · Pasillo oficinas",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 14,
+   "x": 5.62,
+   "z": 2.25,
+   "rot": -90,
+   "zone": "509 · Pasillo oficinas",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 15,
+   "x": 5.32,
+   "z": 5.4,
+   "rot": -90,
+   "zone": "Columna · puerta cancelada",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 16,
+   "x": 5.92,
+   "z": 5.4,
+   "rot": 90,
+   "zone": "Columna · puerta cancelada",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 17,
+   "x": 5.32,
+   "z": 7,
+   "rot": -90,
+   "zone": "Columna · puerta cancelada",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 18,
+   "x": 5.92,
+   "z": 7,
+   "rot": 90,
+   "zone": "Columna · puerta cancelada",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 19,
+   "x": 8.56,
+   "z": 4.85,
+   "rot": -90,
+   "zone": "510 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 20,
+   "x": 9.16,
+   "z": 4.85,
+   "rot": 90,
+   "zone": "510 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 21,
+   "x": 8.56,
+   "z": 5.97,
+   "rot": -90,
+   "zone": "510 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 22,
+   "x": 9.16,
+   "z": 5.97,
+   "rot": 90,
+   "zone": "510 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 23,
+   "x": 8.56,
+   "z": 7.09,
+   "rot": -90,
+   "zone": "510 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 24,
+   "x": 9.16,
+   "z": 7.09,
+   "rot": 90,
+   "zone": "510 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 25,
+   "x": 8.4,
+   "z": 3.22,
+   "rot": 0,
+   "zone": "510 · Pared del fondo (cajas)",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 26,
+   "x": 9.55,
+   "z": 3.22,
+   "rot": 0,
+   "zone": "510 · Pared del fondo (cajas)",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 27,
+   "x": 10.7,
+   "z": 3.22,
+   "rot": 0,
+   "zone": "510 · Pared del fondo (cajas)",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 28,
+   "x": 5.62,
+   "z": 4.55,
+   "rot": 180,
+   "zone": "Columna · puerta cancelada",
+   "name": "",
+   "prop": true
+  }
+ ],
+ "daniela": [
+  {
+   "id": 1,
+   "x": 0.45,
+   "z": 3,
+   "rot": 90,
+   "zone": "509 · Pared izquierda",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 2,
+   "x": 0.45,
+   "z": 4.15,
+   "rot": 90,
+   "zone": "509 · Pared izquierda",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 3,
+   "x": 0.45,
+   "z": 5.3,
+   "rot": 90,
+   "zone": "509 · Pared izquierda",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 4,
+   "x": 0.45,
+   "z": 7.05,
+   "rot": 90,
+   "zone": "509 · Pared izquierda",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 5,
+   "x": 2.72,
+   "z": 4.85,
+   "rot": -90,
+   "zone": "509 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 6,
+   "x": 3.32,
+   "z": 4.85,
+   "rot": 90,
+   "zone": "509 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 7,
+   "x": 2.72,
+   "z": 5.97,
+   "rot": -90,
+   "zone": "509 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 8,
+   "x": 3.32,
+   "z": 5.97,
+   "rot": 90,
+   "zone": "509 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 9,
+   "x": 2.72,
+   "z": 7.09,
+   "rot": -90,
+   "zone": "509 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 10,
+   "x": 3.32,
+   "z": 7.09,
+   "rot": 90,
+   "zone": "509 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 11,
+   "x": 3.33,
+   "z": 1.1,
+   "rot": 90,
+   "zone": "509 · Pasillo oficinas",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 12,
+   "x": 5.62,
+   "z": 1.1,
+   "rot": -90,
+   "zone": "509 · Pasillo oficinas",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 13,
+   "x": 3.33,
+   "z": 2.25,
+   "rot": 90,
+   "zone": "509 · Pasillo oficinas",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 14,
+   "x": 5.62,
+   "z": 2.25,
+   "rot": -90,
+   "zone": "509 · Pasillo oficinas",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 15,
+   "x": 5.32,
+   "z": 5.4,
+   "rot": -90,
+   "zone": "Columna · puerta cancelada",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 16,
+   "x": 5.92,
+   "z": 5.4,
+   "rot": 90,
+   "zone": "Columna · puerta cancelada",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 17,
+   "x": 5.32,
+   "z": 7,
+   "rot": -90,
+   "zone": "Columna · puerta cancelada",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 18,
+   "x": 5.92,
+   "z": 7,
+   "rot": 90,
+   "zone": "Columna · puerta cancelada",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 19,
+   "x": 8.56,
+   "z": 4.85,
+   "rot": -90,
+   "zone": "510 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 20,
+   "x": 9.16,
+   "z": 4.85,
+   "rot": 90,
+   "zone": "510 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 21,
+   "x": 8.56,
+   "z": 5.97,
+   "rot": -90,
+   "zone": "510 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 22,
+   "x": 9.16,
+   "z": 5.97,
+   "rot": 90,
+   "zone": "510 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 23,
+   "x": 8.56,
+   "z": 7.09,
+   "rot": -90,
+   "zone": "510 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 24,
+   "x": 9.16,
+   "z": 7.09,
+   "rot": 90,
+   "zone": "510 · Isla central",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 25,
+   "x": 8.4,
+   "z": 3.22,
+   "rot": 0,
+   "zone": "510 · Pared del fondo (cajas)",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 26,
+   "x": 9.55,
+   "z": 3.22,
+   "rot": 0,
+   "zone": "510 · Pared del fondo (cajas)",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 27,
+   "x": 10.7,
+   "z": 3.22,
+   "rot": 0,
+   "zone": "510 · Pared del fondo (cajas)",
+   "name": "",
+   "prop": false
+  },
+  {
+   "id": 28,
+   "x": 5.62,
+   "z": 4.55,
+   "rot": 180,
+   "zone": "Columna · puerta cancelada",
+   "name": "",
+   "prop": true
+  }
+ ]
+}
